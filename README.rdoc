@@ -80,3 +80,4 @@ Also, don't forget to Hamlize your Rails app:
 
 This work is derived from code in {Ruby on Rails}[http://rubyonrails.org/] and
 is released under its same license, the MIT License.
+

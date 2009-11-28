@@ -118,8 +118,14 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
              "Don't add timestamps to the migration file for this model") { |v| options[:skip_timestamps] = v }
       opt.on("--skip-userstamps",
              "Don't add userstamps to the migration file for this model") { |v| options[:skip_userstamps] = v }
+      opt.on("--skip-scope-everything",
+             "Don't add scope everyhing fields to the migration file for this model") { |v| options[:skip_scope_everything] = v }
+      opt.on("--skip-positions",
+             "Don't add position related stuff") { |v| options[:skip_positions] = v }
       opt.on("--skip-migration",
              "Don't generate a migration file for this model") { |v| options[:skip_migration] = v }
+      opt.on("--include-helper",
+             "Generated helpers") { |v| options[:include_helper] = v }
       opt.on("--force-plural",
              "Forces the generation of a plural ModelName") { |v| options[:force_plural] = v }
     end
