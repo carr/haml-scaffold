@@ -1,0 +1,21 @@
+<% attributes.reject!{|x| ['created_by', 'updated_by', 'position', "#{ActiveRecord::ScopeEverything.field}"].member?(x.name)} -%>
+<% if defined?(DefaultName) -%>
+%h2= @<%= singular_name %>
+<% else -%>
+%h2= "<%= class_name %> \"#{@<%= singular_name %>.to_param}\""
+<% end %>
+- content_tag_for :div, @<%= singular_name %> do
+  %ul
+<% for attribute in attributes -%>
+    %li
+      %strong <%= attribute.column.human_name %>:
+<% if attribute.name =~ /(_id)$/ && defined?(DefaultName) -%>
+      =h @<%= singular_name %>.<%= attribute.name.gsub(/_id$/, '') %>
+<% else -%>
+      =h @<%= singular_name %>.<%= attribute.name %>
+<% end -%>
+<% end -%>
+%ul.show_links_menu
+  %li= link_to 'Edit', edit_<%= singular_name %>_path(@<%= singular_name %>)
+  %li= link_to 'Back', :back
+

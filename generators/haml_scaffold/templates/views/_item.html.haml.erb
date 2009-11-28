@@ -1,0 +1,21 @@
+<% attributes.reject!{|x| ['created_by', 'updated_by', 'position', "#{ActiveRecord::ScopeEverything.field}"].member?(x.name)} -%>
+- content_tag_for :div, <%= singular_name %> do
+  %ul
+<% for attribute in attributes -%>
+    %li
+      %strong <%= attribute.column.human_name %>:
+<% if attribute.name =~ /(_id)$/ && defined?(DefaultName) -%>
+      =h <%= singular_name %>.<%= attribute.name.gsub(/_id$/, '') %>
+<% else -%>
+      =h <%= singular_name %>.<%= attribute.name %>
+<% end -%>
+<% end -%>
+  %div.item_links_menu
+<% if options[:has_position] -%>
+    = link_to 'Move higher', move_higher_<%= singular_name %>_path(<%= singular_name %>), :method => :put
+    = link_to 'Move lower', move_lower_<%= singular_name %>_path(<%= singular_name %>), :method => :put
+<% end -%>
+    = link_to 'Show', <%= singular_name %>_path(<%= singular_name %>)
+    = link_to 'Edit', edit_<%= singular_name %>_path(<%= singular_name %>)
+    = link_to 'Destroy', <%= singular_name %>_path(<%= singular_name %>), :confirm => 'Are you sure?', :method => :delete
+

@@ -1,0 +1,7 @@
+%h2 Editing <%= singular_name.humanize.downcase %>
+= render :partial => "form", :locals => {:<%= singular_name %> => @<%= singular_name %>}
+%ul.edit_links_menu
+  %li= link_to 'Show', @<%= singular_name %>
+  %li= link_to 'Back', :back
+  %li= link_to 'Destroy', @<%= singular_name %>, :confirm => 'Are you sure?', :method => :delete
+
