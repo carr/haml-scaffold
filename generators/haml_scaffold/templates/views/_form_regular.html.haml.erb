@@ -1,0 +1,16 @@
+<% attributes.reject!{|x| ['created_by', 'updated_by', 'position', "#{ActiveRecord::ScopeEverything.field}"].member?(x.name)} -%>
+- form_for(<%= singular_name %>) do |f|
+  = f.error_messages
+<% for attribute in attributes -%>
+  %p
+    = f.label :<%= attribute.name %>
+    %br
+<% if attribute.name =~ /(_id)$/ -%>
+    = f.collection_select :<%= attribute.name %>, <%= attribute.name.gsub(/(_id)$/, '').camelize %>.all, :id, :name
+<% else -%>
+    = f.<%= attribute.field_type %> :<%= attribute.name %>
+<% end -%>
+<% end -%>
+  %p
+    = f.submit t('Save')
+

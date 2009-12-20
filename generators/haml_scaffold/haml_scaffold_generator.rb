@@ -131,7 +131,7 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
     end
 
     def scaffold_views
-      %w[ index show new edit _form _item ]
+      %w[ index show new edit _form _list ]
     end
 
     def model_name
