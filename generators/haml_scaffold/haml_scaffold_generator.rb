@@ -76,7 +76,7 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
         m.template("views/#{action}.html.haml.erb", File.join('app/views', controller_class_path, controller_file_name, "#{filename}.html.haml"))
       end
 
-      controller_type = defined?(InheritedResources) ? 'inherited_resources' : regular
+      controller_type = defined?(InheritedResources) ? 'inherited_resources' : 'regular'
       m.template("controller_#{controller_type}.rb.erb", File.join('app/controllers', controller_class_path, "#{controller_file_name}_controller.rb"))
 
       m.template('helper.rb.erb',          File.join('app/helpers',     controller_class_path, "#{controller_file_name}_helper.rb")) if options[:include_helper]

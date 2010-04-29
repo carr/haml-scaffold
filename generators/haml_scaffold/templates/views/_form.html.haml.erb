@@ -1,4 +1,8 @@
-<% attributes.reject!{|x| ['created_by', 'updated_by', 'position', "#{ActiveRecord::ScopeEverything.field}"].member?(x.name)} -%>
+<% rejected_attributes = ['created_by', 'updated_by', 'position'] -%>
+<% if defined?(ActiveRecord::ScopeEverything) -%>
+<% rejected_attributes << "#{ActiveRecord::ScopeEverything.field}" -%>
+<% end -%>
+<% attributes.reject!{|x| rejected_attributes.member?(x.name)} -%>
 - semantic_form_for(<%= singular_name %>) do |f|
   - f.inputs do
 <% for attribute in attributes -%>
