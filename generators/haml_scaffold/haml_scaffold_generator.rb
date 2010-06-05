@@ -179,7 +179,7 @@ module Rails
           logger.route "map.resources :#{resource_list}"
 
           unless options[:pretend]
-            gsub_file 'config/routes.rb', /(#{Regexp.escape(sentinel)})/mi do |match|
+            gsub_file 'config/routes.rb', /(#{Regexp.escape(look_for)})/mi do |match|
              "#{match}\n  map.resources :#{resource_list}\n"
             end
           end
