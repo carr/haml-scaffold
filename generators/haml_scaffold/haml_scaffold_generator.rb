@@ -5,7 +5,7 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
                   :skip_scope_everything => false,
                   :skip_positions => false,
                   :skip_inherited_resources => false,
-                  :skip_formtastic => false
+                  :skip_formtastic => false,
                   :skip_toggles => false,
                   :include_helper => false
 
@@ -42,9 +42,11 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
 
     # Use InheritedResources type of controllers if the plugin is installed
     @controller_type = defined?(InheritedResources) && !options[:skip_inherited_resources] ? 'inherited_resources' : 'regular'
+    logger.info "Using '#{@controller_type}' controller type"
 
     # Use Formtastic form type if the plugin is installed
     @form_type = defined?(Formtastic) && !options[:skip_formtastic] ? 'formtastic' : 'regular'
+    logger.info "Using '#{@form_type}' form type"
 
     options[:has_position] = !attributes.select{|x| x.name=='position' && x.type==:integer}.blank? && !options[:skip_positions]
 
@@ -69,9 +71,9 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
   def manifest
     @rejected_attributes = ['created_by', 'updated_by', 'position']
     if defined?(ActiveRecord::ScopeEverything)
-      rejected_attributes << "#{ActiveRecord::ScopeEverything.field}"
+      @rejected_attributes << "#{ActiveRecord::ScopeEverything.field}"
     end
-    @attributes.reject!{|x| rejected_attributes.member?(x.name)}
+    @attributes.reject!{|x| @rejected_attributes.member?(x.name)}
     @attributes.sort!{|a, b| %w(name title).member?(a.name) ? -1 : 1 }
 
     record do |m|
@@ -90,7 +92,8 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
 
       # scaffold all the basic views
       scaffold_views.each_pair do |action, filename|
-        m.template("views/#{filename}.html.haml.erb", File.join('app/views', controller_class_path, controller_file_name, "#{action}.html.haml"))
+        m.template( "views/#{filename}.html.haml.erb", 
+                    File.join('app/views', controller_class_path, controller_file_name, "#{action}.html.haml"))
       end
 
       # scaffold the controller
@@ -103,7 +106,7 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
       m.template('helper.rb.erb',          File.join('app/helpers',     controller_class_path, "#{controller_file_name}_helper.rb")) if options[:include_helper]
       m.template('helper_test.rb.erb',     File.join('test/unit/helpers',    controller_class_path, "#{controller_file_name}_helper_test.rb")) if options[:include_helper]
       m.template('functional_test.rb.erb', File.join('test/functional', controller_class_path, "#{controller_file_name}_controller_test.rb"))
-      m.template('layout.html.haml.erb', 'app/views/layouts/application.html.haml', :collision => :skip, :assigns => {:application_name => @application_name})
+      m.template('layout.html.haml.erb', 'app/views/layouts/application.html.haml', :collision => :skip)
 
       # TODO fix this, ugly code
       routing_options = ''
@@ -152,8 +155,12 @@ class HamlScaffoldGenerator < Rails::Generator::NamedBase
     end
 
     def scaffold_views
-      views = %w[ index show new edit _list ].map{|view| {:view => :view}
-      views["_form"] = @form_type
+      views = %w(index show new edit _list).inject({}) do |memo, view|
+        memo[view] = view
+        memo
+      end
+      views["_form"] = "_form_#{@form_type}"
+      views
     end
 
     def model_name
@@ -166,14 +173,27 @@ module Rails
 	module Generator
 	  module Commands
 	    class Create < Base
+        # create routes
 	      def infinum_route_resources(resource_list)
-          sentinel = 'ActionController::Routing::Routes.draw do |map|'
+          look_for = 'ActionController::Routing::Routes.draw do |map|'
           logger.route "map.resources :#{resource_list}"
 
           unless options[:pretend]
-           gsub_file 'config/routes.rb', /(#{Regexp.escape(sentinel)})/mi do |match|
+            gsub_file 'config/routes.rb', /(#{Regexp.escape(sentinel)})/mi do |match|
              "#{match}\n  map.resources :#{resource_list}\n"
             end
+          end
+        end
+      end
+
+      # destroy routes
+      class Destroy < RewindBase
+	      def infinum_route_resources(resource_list)
+          look_for = "\n  map.resources :#{resource_list}\n"
+          logger.route "map.resources :#{resource_list}"
+          
+          unless options[:pretend]
+            gsub_file 'config/routes.rb', /(#{look_for})/mi, ''
           end
         end
       end
