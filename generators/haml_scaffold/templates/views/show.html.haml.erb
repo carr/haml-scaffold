@@ -1,8 +1,3 @@
-<% rejected_attributes = ['created_by', 'updated_by', 'position'] -%>
-<% if defined?(ActiveRecord::ScopeEverything) -%>
-<% rejected_attributes << "#{ActiveRecord::ScopeEverything.field}" -%>
-<% end -%>
-<% attributes.reject!{|x| rejected_attributes.member?(x.name)} -%>
 <% if defined?(DefaultName) -%>
 %h2= @<%= singular_name %>
 <% else -%>

@@ -1,4 +1,3 @@
-<% attributes.reject!{|x| ['created_by', 'updated_by', 'position', "#{ActiveRecord::ScopeEverything.field}"].member?(x.name)} -%>
 - content_tag_for :div, <%= singular_name %> do
   %ul
 <% for attribute in attributes -%>
